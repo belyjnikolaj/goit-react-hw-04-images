@@ -1,12 +1,10 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { animateScroll } from 'react-scroll';
 import Notiflix from 'notiflix';
-import fetchImages from "services/fetchImages.js";
+import fetchImages from 'services/fetchImages.js';
 import Loader from 'components/loader';
-import Button from "components/button";
-import ImageGalleryItem from "components/imageGalleryItem";
+import Button from 'components/button';
+import ImageGalleryItem from 'components/imageGalleryItem';
 import css from './ImageGallery.module.css';
 
 const ImageGallery = ({ searchText }) => {
@@ -17,7 +15,7 @@ const ImageGallery = ({ searchText }) => {
   const [totalHits, setTotalHits] = useState(0);
 
   useEffect(() => {
-    const savedPage = localStorage.getItem("currentPage");
+    const savedPage = localStorage.getItem('currentPage');
     if (savedPage) {
       setPage(parseInt(savedPage));
     }
@@ -29,7 +27,7 @@ const ImageGallery = ({ searchText }) => {
       setError(null);
       setPage(1);
       fetchImages(searchText, 1)
-        .then(data => {
+        .then((data) => {
           if (!data.hits || data.hits.length === 0) {
             throw new Error('No results found.');
           }
@@ -39,10 +37,10 @@ const ImageGallery = ({ searchText }) => {
           animateScroll.scrollToBottom({
             duration: 500,
             delay: 0,
-            smooth: 'easeInOutQuart'
+            smooth: 'easeInOutQuart',
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           Notiflix.Notify.failure('An error occurred while fetching images. Please try again later.');
           setError('An error occurred while fetching images.');
@@ -55,17 +53,17 @@ const ImageGallery = ({ searchText }) => {
     const nextPage = page + 1;
     setIsLoading(true);
     fetchImages(searchText, nextPage)
-      .then(data => {
-        setData(prevData => [...prevData, ...data.hits]);
+      .then((data) => {
+        setData((prevData) => [...prevData, ...data.hits]);
         setIsLoading(false);
         setPage(nextPage);
         animateScroll.scrollToBottom({
           duration: 500,
           delay: 0,
-          smooth: 'easeInOutQuart'
+          smooth: 'easeInOutQuart',
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         Notiflix.Notify.failure('An error occurred while fetching images. Please try again later.');
         setError('An error occurred while fetching images.');
@@ -74,13 +72,17 @@ const ImageGallery = ({ searchText }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem("currentPage", page);
+    localStorage.setItem('currentPage', page);
   }, [page]);
 
   return (
     <>
+      {error && (
+        <div className={css.error}>{error}</div>
+      )}
+
       <ul className={css.gallery}>
-        {data.map(el => (
+        {data.map((el) => (
           <ImageGalleryItem
             key={el.id}
             imageUrl={el.webformatURL}
@@ -97,7 +99,6 @@ const ImageGallery = ({ searchText }) => {
       </div>
     </>
   );
-}
+};
 
 export default ImageGallery;
-
